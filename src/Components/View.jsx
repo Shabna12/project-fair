@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Add from './Add'
 import Edit from './Edit'
-import { allProjectAPI } from '../Services/allAPI'
+import { allProjectAPI, removeProjectAPI } from '../Services/allAPI'
+import { addResponseContext, editResponseContext } from '../contexts/ContextAPI'
 
 
 const View = () => {
 
+  const {editResponse, setEditResponse} = useContext(editResponseContext)
+
+  const {addResponse,setAddResponse} = useContext(addResponseContext)
+
   const [userProjects, setUserProjects] = useState([])
 
-  console.log(userProjects)
+  // console.log(userProjects)
 
   useEffect (() => {
     getUserProjects()
-  }, [])
+  }, [addResponse,editResponse])
 
   const getUserProjects = async () => {
     const token = sessionStorage.getItem("token")
@@ -27,6 +32,27 @@ const View = () => {
         console.log(result);
         if (result.status==200) {
           setUserProjects(result.data)
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  //delete project
+  const handleDeleteProject = async(pid) => {
+    const token = sessionStorage.getItem("token")
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${token}`
+      }
+      try {
+        const result = await removeProjectAPI(pid,reqHeader)
+        if (result.status==200) {
+          getUserProjects()
+        } else {
+          console.log(result);
         }
       } catch (err) {
         console.log(err);
@@ -51,12 +77,12 @@ const View = () => {
               <h3> {project?.title} </h3>
               <div className="d-flex align-items-center">
                 <div>
-                 <Edit/>
+                 <Edit  project={project} />
                 </div>
                 <div className="btn">
                   <a href={project?.github} target='_blank'> <i className='fa-brands fa-github'></i>   </a>
                 </div>
-                <button className='btn text-danger'> <i className='fa-solid fa-trash'></i>   </button>
+                <button onClick={() => handleDeleteProject(project?._id)} className='btn text-danger'> <i className='fa-solid fa-trash'></i>   </button>
               </div>
             </div>
           ))

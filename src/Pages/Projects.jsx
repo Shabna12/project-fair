@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { Col, Row } from 'react-bootstrap'
 import ProjectCard from '../Components/ProjectCard'
 import { allProjectAPI } from '../Services/allAPI'
 
+
 const Projects = () => {
+
+  const [searchKey, setSearchKey] = useState("")
 
   const [allProjects, setAllProjects] = useState([])
 
@@ -12,7 +15,7 @@ const Projects = () => {
 
   useEffect(() => {
     getAllProjects()
-  },[])
+  },[searchKey])
 
   const getAllProjects = async () => {
     const token = sessionStorage.getItem("token")
@@ -23,7 +26,7 @@ const Projects = () => {
       }
       //api call
       try {
-        const result = await allProjectAPI(reqHeader)
+        const result = await allProjectAPI(searchKey,reqHeader)
         console.log(result);
         if (result.status==200) {
           setAllProjects(result.data)
@@ -42,7 +45,7 @@ const Projects = () => {
      <div style={{marginTop:'120px', backgroundColor:'lightgray'}} className="container-fluid">
        <div className="d-flex justify-content-between">
          <h1>All Projects</h1>
-         <input type="text" className='form-control w-50' placeholder='Search Projects by Language used'/>
+         <input onChange={(e)=>setSearchKey(e.target.value)} type="text" className='form-control w-50' placeholder='Search Projects by Language used'/>
        </div>
        <Row className='mt-5'>
          {
