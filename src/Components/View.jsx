@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Add from './Add'
 import Edit from './Edit'
-import { allProjectAPI, removeProjectAPI } from '../Services/allAPI'
+import { allProjectAPI, removeProjectAPI, userProjectAPI } from '../Services/allAPI'
 import { addResponseContext, editResponseContext } from '../contexts/ContextAPI'
 
 
@@ -28,7 +28,7 @@ const View = () => {
       }
       //api call
       try {
-        const result = await allProjectAPI(reqHeader)
+        const result = await userProjectAPI(reqHeader)
         console.log(result);
         if (result.status==200) {
           setUserProjects(result.data)
